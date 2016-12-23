@@ -52,6 +52,13 @@ git log --pretty=oneline
 git status
 git status -s # 精简模式
 
+# 将工作区和HEAD（当前工作分支,非暂存区）相比
+git diff HEAD
+
+# 将暂存区与HEAD相比
+git diff --cached
+git diff --staged
+
 
 
 ```
