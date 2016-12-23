@@ -16,4 +16,43 @@ git config --global user.email contactmexkj@163.com
 # 具体配置写入工程目录下的.git/config
 git config --local user.name JeffXue
 git config --local user.email contactmexkj@163.com
+
+# 设置命令别名
+git config --system alias.st status
+git config --system alias.ci commit
+git config --system alias.co checkout
+git config --system alias.br branch
+
+# git命令输出开启颜色
+git config --global color.ui true
+
+# 删除相关配置
+git config --unset --global user.name
+git config --unset --global user.email
+
+# 重新修改最新的提交，改正作者和提交者的错误信息
+git commit --amend --allow-empty --reset-author
+# --amend 对刚刚的提交进行修补
+# --allow-empty 允许空白提交
+# --reset-author 将Author的ID同步修改
+
+# 版本库创建三部曲
+git init
+git add 
+git commit
+
+# 比较修改
+git diff #实际比较的为工作区和暂存区的区别
+
+# 查看日志（有多种不同的格式）
+git log --pretty=fuller 
+git log --pretty=oneline
+
+# 查看状态
+git status
+git status -s # 精简模式
+
+
+
 ```
+
