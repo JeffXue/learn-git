@@ -57,7 +57,7 @@ git status -s # 精简模式
 # 理解Git暂存区（stage）
 # Git会分为工作区、暂存区（statge）、版本库
 # 文件.git/index包含文件索引和目录树(跟踪暂存区的内容)(二进制)
-# 文件.git/HEAD则记录当前版本库工作分支，指向.git/refs/目录下的一个文件，该文件保存一个游标（一个游标即可理解为目录树）
+# 文件.git/HEAD则记录当前版本库工作分支，指向.git/refs/目录下的一个文件，该文件保存一个游标
 # 文件的内容实际保存在git对象库.git/objects目录中
 
 # 例子说明
@@ -100,7 +100,23 @@ git clean -fd
 git stash # 运行后工作区尚未提交的改动（包括暂存区的改动）全部都不见了
 
 # Git对象库
+# 查看日志的详尽输出，每次提交的输出日志中有commit、tree、parent三个哈希值
+# commit：本次提交的唯一标识
+# tree：本次提交所对应的目录树
+# parent：本次提交的父提交
+git log --pretty=raw
 
+# 通过提交对象之间的相互关联，可以很容易的识别出一条跟踪链
+git log --graph --pretty=raw
+
+# .git/refs是保存引用的命名空间的
+# .git/refs/heads目录下的引用又称为分支
+
+# 显示当前工作分支，带*号的表示这个分支是当前工作分支
+git branch
+
+
+# Git重置
 
 ```
 
