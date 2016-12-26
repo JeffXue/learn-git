@@ -279,7 +279,45 @@ git cherry-pick <commit-ish>
 # 添加-i参数接口进入一个交互界面进行变基操作
 git rebase --onto C E^ F 
 
+# 丢弃历史步骤：
+#（1）创建新根提交
+#（2）进行变基操作
 
+# 方法1：
+# 查看里程碑指向的目录树
+git cat-file -p A^{tree}
+# 直接从目录树创建提交
+git commit-tree -m "message" A^{tree} 
+# 执行变基，将里程碑A之后的提交全部迁移到新的根提交上
+git rebase --onto 8f7f94b A master
+
+# 方法2：
+# 查看里程碑A对应的提交
+git cat-file commit A^0
+# 过滤掉parent开头，并保存到一个文件中
+git cat-file commit A^0 | sed -e '/^parent/d' > tmpfile
+# 将tmpfile作为一个commit对象写入对象库
+git hash-object -t commit -w --tmpfile
+# 执行变基，将里程碑A之后的提交全部迁移到新的根提交上
+git rebase --onto 8f7f94b A master
+
+# 反转提交:想修正一个错误历史提交的正确做法是反转提交，即重新做一次新的提交
+# 将HEAD提交反向再提交一次
+git revert HEAD
+
+# 将指定版本库克隆到目录
+git clone <repository> <directory>
+
+# 克隆版本库，但不包含工作区，直接就是版本库的内容
+# 一般约定裸版本库目录名以.git为后缀
+git clone --bare <repository> <directory>
+git clone --mirror <repository> <directory>
+
+git push [<remote-repos>] [<refspec>]
+git pull [<remote-repos>] [<refspec>]
+
+# 创建裸版本库
+git init --bare
 
 
 ```
