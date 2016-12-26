@@ -340,5 +340,93 @@ git gc --prune=now # 对所有未关联的对象进行清理
 # git rebase -i
 # git am
 
+
+# git通过检查推送操作是不是fast-forward推送，从而保证用户提交不会互相覆盖
+# 一般情况下，推送只允许fast-forward推送
+# fast-forward推送即要推送的本地版本库的提交是建立在远程版本库相应分支的现有提交基础上的
+
+#强制推送，即使是non-fast-forward推送也会成功执行，强制刷新服务器中的版本
+git push -f # 不一定是正确的解决方案
+
+# 理性的工作协同要避免non-fast-forward推送
+# 一旦向服务器推送后，如果发现错误，不要使用会更改历史的操作（变基、修补提交），而是采用不会修改历史提交的反转提交等操作
+# 理性操作：执行git pull获取服务器最新的提交并和本地提交进行合并，合并成功后再向服务器提交
+
+# 禁止non-fast-forward推送
+#（1）修改/path/to/repos/shared.git
+git --git-dir=/path/to/repos/shared.git receive.denyNonFastForwards true
+# (2)通过钩子脚本进行设置
+
+# git pull = git fetch + git merge
+
+# 合并操作
+git merge [options] <commit>
+
+# 使用图形工具解决冲突
+git mergetool
+
+# 合并相关设置
+git config --global merge.conflictstyle merge # 可用风格：merge, diff3
+git config --global merge.tool kdiff3
+git config --gloabl mergettool.kdiff3.path /path/to/kdiff3
+# 如果所用的冲突解决工具不在内置的工具列表中，还可以使用mergetool.<tool>.cmd对自定义工具的命令进行设置
+# merge.log 是否在合并提交说明中包含提交的概要信息，默认false
+
+# 显示里程碑
+git tag # -n<num>可以在显示里程碑的同时显示说明
+
+# git log中显示提交对应的里程碑
+git log --oneline --decorate
+
+# 将提交显示为一个易记的名称
+git describe
+
+# 创建里程碑(轻量级，不记录谁创建，应使用带说明的里程碑)
+git tag <tagname> [<commit>]
+
+# 创建带说明的里程碑
+git tag -m <msg> <tagname> [<commit>]
+
+# 删除里程碑
+git tag -d mytag
+
+# 推送里程碑到远程版本库
+git push origin mytag
+git push origin refs/tags/*
+
+# 必须显示推送tag
+# 执行拉回操作，自动从远程版本库获取tag，并在本地版本库中创建
+# 如果本地已有同名tag，默认不同步上游tag，需显示执行拉回操作
+
+# 删除远程仓库tag
+git push origin :mytag
+
+# 显示分支
+git branch
+
+# 创建分支，不会自动切换
+git branch <branchname>
+git branch <branchname> <start-point>
+
+# 删除分支
+git branch -d <branchname>
+git branch -D <branchname> # 强制删除
+git push origin :branchname # 删除远程版本库的分支
+
+# 重命名分支
+git branch -m <oldbranch> <newbranch>
+git branch -M <oldbranch> <newbranch> # 强制重命名
+ 
+# 查看哪些提交领先
+git cherry
+
+# 保存为一个补丁文件
+git format-patch [<options>] [<since> | <revision-range>]
+
+# 应用补丁文件
+patch -pl xxxxxxxxxxxxx.patch
+
+
+
 ```
 
