@@ -313,12 +313,32 @@ git clone <repository> <directory>
 git clone --bare <repository> <directory>
 git clone --mirror <repository> <directory>
 
-git push [<remote-repos>] [<refspec>]
-git pull [<remote-repos>] [<refspec>]
-
 # 创建裸版本库
 git init --bare
 
+# 查看版本库中没有被任何引用关联的松散对象
+git fsck
+
+# 清理松散对象，而通过重置废弃的部分存在关联的提交会无法被清除
+git prune
+
+# 强制让之前的记录全部过期
+git reflog expire --expire=now --all
+
+# git gc对版本库进行一系列的优化动作
+#（1）对分散在.git/refs下的文件进行打包，打包到文件.git/packed-refs中
+#（2）丢弃90天前的reflog记录（git reflog expire --all）
+#（3）对松散对象进行打包（git repack）
+#（4）清除未被关联的对象。默认只清除2周以前的未被关联的对象（git prune --expire <date>）
+#（5）其他清理（如对合并冲突的历史记录进行过期清理）
+git gc
+git gc --prune=now # 对所有未关联的对象进行清理
+
+# 目前有以下命令后会自动指定git gc --auto命令
+# git merge
+# git receive-pack
+# git rebase -i
+# git am
 
 ```
 
