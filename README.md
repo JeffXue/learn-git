@@ -357,8 +357,6 @@ git push -f # 不一定是正确的解决方案
 git --git-dir=/path/to/repos/shared.git receive.denyNonFastForwards true
 # (2)通过钩子脚本进行设置
 
-# git pull = git fetch + git merge
-
 # 合并操作
 git merge [options] <commit>
 
@@ -420,13 +418,63 @@ git branch -M <oldbranch> <newbranch> # 强制重命名
 # 查看哪些提交领先
 git cherry
 
+# git pull = git fetch + git merge
+# 当执行git pull 命令时，会和被跟踪的远程分支进行合并（或者变基）
+# 当执行git push 命令时，会推送到远程版本库的同名分支中
+
+# 注册远程版本库 origin
+git remote add origin git@github.com:JeffXue/learnGit.git
+
+# 显示已经注册的远程版本库
+git remote -v
+
+# 查看远程分支
+git branch -r
+
+# 从远程版本库中获取
+git fetch your-remote
+
+# 更改远程版本库地址
+git remote set-url origin https://github.com/JeffXue/learnGit.git
+
+# 更改远程版本库名称
+git remote rename origin your-remote
+
+# 获取所有远程版本库的更新
+git remote update
+
+# 删除远程版本库
+git remote rm your-remote
+
+# 本地新建分支中执行git push推送不会推送也不会报错
+# 因为远程不存在同名分支，不会进行推送
+# 如果本地其他分支在远程版本库有同名分支且本地包含更新的话，会对这些分支进行推送
+
+# 使用变基而非合并操作，将本地分支的改动变基到跟踪分支上
+git pull --rebase
+git config branch.<branchname>.rebase true # 在<branchname>中执行git pull会默认采取变基操作
+git config branch.autosetuprebase true # 基于远程分支建立本地分支时默认配置上面的rebase参数
+
+# 设置不获取里程碑只获取分支和提交
+git fetch --no-tags origin master
+
+# 注册远程版本库时，避免将远程版本库的里程碑引入本地版本库
+git remote add --no-tags hello-world file:///path/to/repos/hello-world.git
+
+
+# Git版本库本身提供的安全机制，避免对版本库的破坏
+# (1)用reflog记录对分支的操作历史
+# (2)关闭non-fast-forward推送(可配置receive.denyNonFastForwards true 禁止一切non-fast-forward推送)
+# (3)关闭分支删除功能(可配置receive.denyDeletes true 则禁止删除分支)
+
 # 保存为一个补丁文件
 git format-patch [<options>] [<since> | <revision-range>]
 
 # 应用补丁文件
 patch -pl xxxxxxxxxxxxx.patch
 
-
+# 将mbox文件中的补丁全部应用到当前分支
+git am user1-mail-archiva
 
 ```
 
