@@ -432,7 +432,8 @@ git remote -v
 git branch -r
 
 # 从远程版本库中获取
-git fetch your-remote
+git fetch # 会更新.git/refs/remotes/*
+git fetch origin master # 会更新.git/refs/remotes/origin/master 
 
 # 更改远程版本库地址
 git remote set-url origin https://github.com/JeffXue/learnGit.git
