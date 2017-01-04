@@ -124,7 +124,6 @@ git log --graph --pretty=raw
 # 显示当前工作分支，带*号的表示这个分支是当前工作分支
 git branch
 
-
 # Git重置
 # 重置到上一个老的提交上
 git reset --hard HEAD^
@@ -181,7 +180,7 @@ git checkout HEAD .
 git checkout HEAD filename
 
 # 保持HEAD指向不变，使用branch所指向的filename替换暂存区和工作区中相应的文件
-git checkout branch --filename
+git checkout branch filename
 
 # 恢复进度
 # 查看保存的进度
