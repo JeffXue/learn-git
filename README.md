@@ -45,9 +45,9 @@ git commit --amend --allow-empty --reset-author
 git init # 初始化仓库
 git add  # 将文件添加到暂存区中
 git commit # 将变更提交到版本库中
+```
 
----
-
+```bash
 # 查看日志（有多种不同的格式）
 git log --pretty=fuller 
 git log --pretty=oneline
@@ -69,9 +69,9 @@ git log --stat --oneline
 # 查看状态
 git status
 git status -s # 精简模式
+```
 
----
-
+```bash
 # 理解Git暂存区（stage）
 # Git会分为工作区、暂存区（statge）、版本库
 # 文件.git/index包含文件索引和目录树(跟踪暂存区的内容)(二进制)
@@ -121,9 +121,9 @@ git log --graph --pretty=raw
 
 # .git/refs是保存引用的命名空间的
 # .git/refs/heads目录下的引用又称为分支
+```
 
----
-
+```bash
 # git reset 用法
 # 方法1：git reset [-q] <tree-ish> [--] <paths> 
 #        重置指定路径下的文件为执行提交的内容，不会重置引用
@@ -148,9 +148,9 @@ git reset --hard master@{2}
 
 # 暂存区的目录树会被重写，会被HEAD指向的目录树所替换，但是工作区不受影响
 git reset HEAD 
+```
 
----
-
+```bash
 # Git检出
 # git checkout 实际上就是修改HEAD本身的指向，该命令不会影响分支“游标”
 
@@ -185,9 +185,9 @@ git checkout HEAD filename
 
 # 保持HEAD指向不变，使用branch所指向的filename替换暂存区和工作区中相应的文件
 git checkout branch filename
+```
 
----
-
+```bash
 # 恢复进度
 # 查看保存的进度
 git stash list
@@ -337,9 +337,9 @@ git gc --prune=now # 对所有未关联的对象进行清理
 # git receive-pack
 # git rebase -i
 # git am
+```
 
-
---- 
+```bash
 
 # 合并操作
 git merge [options] <commit>
@@ -354,8 +354,9 @@ git config --gloabl mergettool.kdiff3.path /path/to/kdiff3
 # 如果所用的冲突解决工具不在内置的工具列表中，还可以使用mergetool.<tool>.cmd对自定义工具的命令进行设置
 # merge.log 是否在合并提交说明中包含提交的概要信息，默认false
 
+```
 
----
+```bash
 
 # 显示里程碑
 git tag # -n<num>可以在显示里程碑的同时显示说明
@@ -386,7 +387,9 @@ git push origin refs/tags/*
 # 删除远程仓库tag
 git push origin :mytag
 
----
+```
+
+```bash
 
 # 显示分支，带*号的表示这个分支是当前工作分支
 git branch 
@@ -406,8 +409,9 @@ git push origin :branchname # 删除远程版本库的分支
 git branch -m <oldbranch> <newbranch>
 git branch -M <oldbranch> <newbranch> # 强制重命名
  
----
+```
 
+```bash
 # 显示已经注册的远程版本库
 git remote -v
 
@@ -429,7 +433,9 @@ git remote update
 # 删除远程版本库
 git remote rm your-remote
 
----
+```
+
+```bash
 
 # 查看哪些提交领先
 git cherry
@@ -449,7 +455,9 @@ git pull --rebase
 git config branch.<branchname>.rebase true # 在<branchname>中执行git pull会默认采取变基操作
 git config branch.autosetuprebase true # 基于远程分支建立本地分支时默认配置上面的rebase参数
 
----
+```
+
+```bash
 
 # 当执行git push 命令时，会推送到远程版本库的同名分支中
 # 本地新建分支中执行git push,不会推送也不会报错
@@ -472,14 +480,18 @@ git push -f # 不一定是正确的解决方案
 git --git-dir=/path/to/repos/shared.git receive.denyNonFastForwards true
 # (2)通过钩子脚本进行设置
 
----
+```
+
+```bash
 
 # Git版本库本身提供的安全机制，避免对版本库的破坏
 # (1)用reflog记录对分支的操作历史
 # (2)关闭non-fast-forward推送(可配置receive.denyNonFastForwards true 禁止一切non-fast-forward推送)
 # (3)关闭分支删除功能(可配置receive.denyDeletes true 则禁止删除分支)
 
----
+```
+
+```bash
 
 # 保存为一个补丁文件
 git format-patch [<options>] [<since> | <revision-range>]
