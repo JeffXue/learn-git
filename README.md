@@ -96,14 +96,6 @@ git reset HEAD
 # 会直接从暂存区删除文件，工作区则不做出改变
 git rm --cached 
 
-# 会用暂存区全部的文件或指定的文件替换工作区的文件，这个操作很危险，会清除工作区中未添加到暂存区的改动
-git checkout
-git checkout -- 
-
-# 会用HEAD指向的分支的全部/部分文件替换暂存区和工作区中的文件，这个命令极具危险
-git checkout HEAD .
-git checkout HEAD 
-
 # 测试运行以便看看哪些文件和目录会被删除
 git clean -nd
 
@@ -177,18 +169,19 @@ git merge acc2f69
 # 检出branch分支，更新HEAD，暂存区及工作区
 git checkout branch
 
-# 显示暂存区与HEAD的差异
+# 显示工作区与HEAD的差异
 git checkout
-git checkout HEAD
 
-# 使用暂存区文件覆盖工作区指定文件，相当于取消filename的本地修改
-git checkout --filename
+# 会用暂存区全部的文件或指定的文件替换工作区的文件，这个操作很危险，会清除工作区中未添加到暂存区的改动
+git checkout .
+git checkout filename 
+
+# 会用HEAD指向的分支的全部/部分文件替换暂存区和工作区中的文件，这个命令极具危险
+git checkout HEAD .
+git checkout HEAD filename
 
 # 保持HEAD指向不变，使用branch所指向的filename替换暂存区和工作区中相应的文件
 git checkout branch --filename
-
-# 取消工作区的所有修改(相对于暂存区),相对危险
-git checkout .
 
 # 恢复进度
 # 查看保存的进度
