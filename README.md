@@ -1,12 +1,20 @@
+# 基本操作
+
+## 查看版本
 ```bash
-# 查看版本
 git --version
+```
 
-# 查看帮助
-git help -a
-git help -g
-git --help
+## git help
+```bash
+git help -a # 查看所有命令
+git help -g # 查看相关指南
+git help <command> # 查看对应命令帮助说明，会直接打开对应的html说明文档
+git --help # 查看常用的帮助文档
+```
 
+## git config
+```bash
 # 设置系统级别用户名和邮箱
 # 具体配置写入/etc/gitconfig
 git config --system user.name JeffXue
@@ -35,79 +43,97 @@ git config --global color.ui true
 git config --unset --global user.name
 git config --unset --global user.email
 
-# 重新修改最新的提交，改正作者和提交者的错误信息
-git commit --amend --allow-empty --reset-author
-# --amend 对刚刚的提交进行修补
-# --allow-empty 允许空白提交
-# --reset-author 将Author的ID同步修改
+# 本地设置一个全局的独享的文件忽略列表
+git config --global core.excludesfile ~/.gitignore
 
-# 版本库创建三部曲
+# Git 忽略语法
+# * 代表任意多字符
+# ? 代表一个字符
+# [abc] 代表可选字符范围
+# 名称最前面是路径分隔符/，表明要忽略的的文件在此目录下
+# 名称最后面是路径分隔符/，表明要忽略的是整个目录
+# 名称全面是感叹号! ，代表不忽略
+# # 代表注释
+```
+
+## 暂存区
+Git会分为工作区、暂存区（statge）、版本库
+文件.git/index包含文件索引和目录树(跟踪暂存区的内容)(二进制)
+文件.git/HEAD则记录当前版本库工作分支，指向.git/refs/目录下的一个文件，该文件保存一个游标
+文件的内容实际保存在git对象库.git/objects目录中
+
+例子说明:
+- 工作区：新增修改一个文件后，该文件只是在工作区
+- 暂存区：执行git add命令后，暂存区的目录树将被更新，同时工作区新增/修改的内容会被写入到对象库中的一个新的对象中，该对象的ID将被记录在暂存区的文件索引中
+- 版本库：执行git commit后时，暂存区的目录树会写到版本库（对象库）中，HEAD会做相应的更新，只想提交时的暂存区的目录树（游标）
+
+.git/refs是保存引用的命名空间的
+.git/refs/heads目录下的引用又称为分支
+
+
+## 版本库创建三部曲
+```bash
 git init # 初始化仓库
 git add  # 将文件添加到暂存区中
 git commit # 将变更提交到版本库中
 ```
 
+### git init
 ```bash
-# 查看日志（有多种不同的格式）
-git log --pretty=fuller 
+git init
+git init --bare # 创建裸版本库
+
+# 将指定版本库克隆到目录
+git clone <repository> <directory>
+
+# 克隆版本库，但不包含工作区，直接就是版本库的内容
+# 一般约定裸版本库目录名以.git为后缀
+git clone --bare <repository> <directory>
+git clone --mirror <repository> <directory>
+```
+
+
+### git add
+```bash
+git add filename # 指定添加文件到暂存区
+git add -i # 选择性添加
+git add -u # 将本地文件的变更全部记录到暂存区
+git rm filename # 删除文件
+git rm --cached # 会直接从暂存区删除文件，工作区则不做出改变
+git mv filename  newfilename # 移动文件
+git clean -nd # 测试运行以便看看哪些文件和目录会被删除
+git clean -fd # 清除当前工作区中没有加入暂存区的文件和目录(具体可见git clean -h)
+```
+
+### git commit
+不要使用`git commit -a`，会将本地所有变更的文件执行提交操作，包括本地修改和删除的文件，但不包括未被版本库跟踪的文件
+会丢失git暂存区带给用户的最大好处：对提交内容进行控制的能力
+```bash
+git commit -m <msg>
+
+# 重新修改最新的提交，改正作者和提交者的错误信息
+git commit --amend --allow-empty --reset-author
+# --amend 对刚刚的提交进行修补
+# --allow-empty 允许空白提交
+# --reset-author 将Author的ID同步修改
+```
+
+---
+
+# git log
+```bash
+git log --pretty=fuller # 查看日志（有多种不同的格式）
 git log --pretty=oneline
 git log --oneline
 
-# 通过--graph参数调用git log可以显示字符界面的提交关系同
 git config --global alias.glog "log --graph"
-git glog --oneline
+git glog --oneline # 通过--graph参数调用git log可以显示字符界面的提交关系
 
-# 只显示最近3次的日志
-git log -3 --pretty=oneline
+git log -3 --pretty=oneline # 只显示最近3次的日志
 
-# 显示每次提交的具体变动
-git log -p -l
+git log -p -l # 显示每次提交的具体变动
 
-# 显示每次提交的变更摘要
-git log --stat --oneline
-
-# 查看状态
-git status
-git status -s # 精简模式
-```
-
-```bash
-# 理解Git暂存区（stage）
-# Git会分为工作区、暂存区（statge）、版本库
-# 文件.git/index包含文件索引和目录树(跟踪暂存区的内容)(二进制)
-# 文件.git/HEAD则记录当前版本库工作分支，指向.git/refs/目录下的一个文件，该文件保存一个游标
-# 文件的内容实际保存在git对象库.git/objects目录中
-
-# 例子说明
-# 工作区：新增修改一个文件后，该文件只是在工作区
-# 暂存区：执行git add命令后，暂存区的目录树将被更新，同时工作区新增/修改的内容会被写入到对象库中的一个新的对象中，该对象的ID将被记录在暂存区的文件索引中
-# 版本库：执行git commit后时，暂存区的目录树会写到版本库（对象库）中，HEAD会做相应的更新，只想提交时的暂存区的目录树（游标）
-
-# 将工作区与暂存区比较
-git diff 
-
-# 将工作区和HEAD（当前版本库工作分支,非暂存区）相比
-git diff HEAD
-
-# 将暂存区与HEAD相比
-git diff --cached
-git diff --cached HEAD
-git diff --staged
-
-# 会直接从暂存区删除文件，工作区则不做出改变
-git rm --cached 
-
-# 测试运行以便看看哪些文件和目录会被删除
-git clean -nd
-
-# 清除当前工作区中没有加入暂存区的文件和目录(具体可见git clean -h)
-git clean -fd
-
-# 不要使用git commit -a，会将本地所有变更的文件执行提交操作，包括本地修改和删除的文件，但不包括未被版本库跟踪的文件
-# 会丢失git暂存区带给用户的最大好处：对提交内容进行控制的能力
-
-# 保存当前工作进度
-git stash # 运行后工作区尚未提交的改动（包括暂存区的改动）全部都不见了
+git log --stat --oneline # 显示每次提交的变更摘要
 
 # Git对象库
 # 查看日志的详尽输出，每次提交的输出日志中有commit、tree、parent三个哈希值
@@ -116,39 +142,45 @@ git stash # 运行后工作区尚未提交的改动（包括暂存区的改动�
 # parent：本次提交的父提交
 git log --pretty=raw
 
-# 通过提交对象之间的相互关联，可以很容易的识别出一条跟踪链
-git log --graph --pretty=raw
+git log --graph --pretty=raw # 通过提交对象之间的相互关联，可以很容易的识别出一条跟踪链
 
-# .git/refs是保存引用的命名空间的
-# .git/refs/heads目录下的引用又称为分支
+# gitk：图形化的git版本库浏览器软件
+gitk  --all  # 显示所有分支
+gitk --since="2 weeks ago" # 显示2周以来的所有提交
+gitk v2.6.12.. include/scsi drivers/scsi # 显示某个里程碑以来针对特定目录的提交
+
+git blame READM #  文件追溯，会逐行显示文件，在每一行的行首显示此行最早是什么版本引入，由谁引入的
 ```
 
+---
+
+# git status
 ```bash
-# git reset 用法
-# 方法1：git reset [-q] <tree-ish> [--] <paths> 
-#        重置指定路径下的文件为执行提交的内容，不会重置引用
-# 方法2：git reset [--mixed | --soft | --hard | --merge | --keep] [-q] [<commit>] 
-#        重置引用，根据不同的选项，可以对暂存区或工作区进行重置
-#        --hard 替换HEAD的引用，替换暂存区，替换工作区
-#        --soft 只替换HEAD的引用
-#        --mixed 替换HEAD的引用，替换暂存区(不指定运行git reset时，默认则为mixed模式)
+git status # 查看状态
+git status -s # 精简模式
 
-# 重置到上一个老的提交上
-git reset --hard HEAD^
-
-# 重置到指定的提交上
-git reset --hard 9e8a761
-
-# 用reflog挽救错误的重置,默认情况下提供分支日志管理，见：git config core.logallrefupdates
-# 查看分支指向的变迁，最新的改变放在最前面
-git reflog show master
-
-# 重置为两次改变之前的值
-git reset --hard master@{2}
-
-# 暂存区的目录树会被重写，会被HEAD指向的目录树所替换，但是工作区不受影响
-git reset HEAD 
+# .gitignore用于配置忽略跟踪，可以放在任何目录中，作用范围是所处的目录及其子目录
+# 忽略只对未跟踪文件有效，对于已加入版本库的文件无效
+# 使用--ignored参数，才会在状态显示中看到被忽略的文件
+git status --ignored -s
 ```
+
+---
+
+# git diff
+```bash
+git diff  # 将工作区与暂存区比较
+
+git diff HEAD # 将工作区和HEAD（当前版本库工作分支,非暂存区）相比
+
+git diff --cached # 将暂存区与HEAD相比
+git diff --cached HEAD
+git diff --staged
+```
+
+---
+
+# git checkout
 
 ```bash
 # Git检出
@@ -157,9 +189,6 @@ git reset HEAD
 # 基于某个分离头指针检出为一个分支
 # 分离头指针状态指的就是HEAD分指针指向了一个具体的提交ID，而不是一个引用（分支）
 git checkout -b new_branch_name 9e8a761 
-
-# 将某个提交合并到当前分支上
-git merge acc2f69
 
 # git checkout 用法
 # 方法1：git checkout [options] <branch>
@@ -187,14 +216,16 @@ git checkout HEAD filename
 git checkout branch filename
 ```
 
-```bash
-# 恢复进度
-# 查看保存的进度
-git stash list
+---
 
-# 从最近的保存的进度进行恢复，恢复前需要留意当前的工作分支
-# 不适用任何参数，会恢复最新保存的工作进度
-git stash pop
+# git stash
+```bash
+# 保存当前工作进度
+git stash # 运行后工作区尚未提交的改动（包括暂存区的改动）全部都不见了
+
+git stash list # 查看保存的进度
+
+git stash pop # 从最近的保存的进度进行恢复，恢复前需要留意当前的工作分支。不使用任何参数，会恢复最新保存的工作进度
 
 # 使用git stash
 git stash # 保存当前工作进度(本地没有被版本控制系统跟踪的文件并不能保存进度)
@@ -210,61 +241,42 @@ git stash [save [--patch] [-k|--[no-]keep-index] [-q|--quiet] [-u|--include-untr
 git stash drop [<stash>] # 删除一个存储的进度
 git stash clear  # 删除所有存储的进度
 git stash branch <branchname> <stash> # 基于进度创建分支
+```
 
-# 设置tag
-git tag -m "message" tagname
+---
 
-git describe
+# git reset
+```bash
+# git reset 用法
+# 方法1：git reset [-q] <tree-ish> [--] <paths> 
+#        重置指定路径下的文件为执行提交的内容，不会重置引用
+# 方法2：git reset [--mixed | --soft | --hard | --merge | --keep] [-q] [<commit>] 
+#        重置引用，根据不同的选项，可以对暂存区或工作区进行重置
+#        --hard 替换HEAD的引用，替换暂存区，替换工作区
+#        --soft 只替换HEAD的引用
+#        --mixed 替换HEAD的引用，替换暂存区(不指定运行git reset时，默认则为mixed模式)
 
-# 删除文件
-git rm filename
+# 重置到上一个老的提交上
+git reset --hard HEAD^
 
-# 将本地文件的变更全部记录到暂存区
-git add -u
+# 重置到指定的提交上
+git reset --hard 9e8a761
 
-# 移动文件
-git mv filename  newfilename
+# 用reflog挽救错误的重置,默认情况下提供分支日志管理，见：git config core.logallrefupdates
+# 查看分支指向的变迁，最新的改变放在最前面
+git reflog show master
 
-# 选择性添加
-git add -i
+# 重置为两次改变之前的值
+git reset --hard master@{2}
 
-# .gitignore用于配置忽略跟踪，可以放在任何目录中，作用范围是所处的目录及其子目录
-# 忽略只对未跟踪文件有效，对于已加入版本库的文件无效
-# 使用--ignored参数，才会在状态显示中看到被忽略的文件
-git status --ignored -s
+# 暂存区的目录树会被重写，会被HEAD指向的目录树所替换，但是工作区不受影响
+git reset HEAD 
+```
 
-# 本地设置一个全局的独享的文件忽略列表
-git config --global core.excludesfile ~/.gitignore
+---
 
-# Git 忽略语法
-# * 代表任意多字符
-# ? 代表一个字符
-# [abc] 代表可选字符范围
-# 名称最前面是路径分隔符/，表明要忽略的的文件在此目录下
-# 名称最后面是路径分隔符/，表明要忽略的是整个目录
-# 名称全面是感叹号! ，代表不忽略
-# # 代表注释
-
-# 文件归档
-git archiva -o latest.zop HEAD
-git archiva -o partial.tar HEAD src doc # 只对src和doc建立归档
-git archiva --format=tar --prefix=1.0/v1.0 | gzip > foo-1.0.tar.gz # 基于里程碑v1.0建立归档,并为归档中的文件添加目录前缀
-
-# gitk：图形化的git版本库浏览器软件
-gitk  --all  # 显示所有分支
-gitk --since="2 weeks ago" # 显示2周以来的所有提交
-gitk v2.6.12.. include/scsi drivers/scsi # 显示某个里程碑以来针对特定目录的提交
-
-# 其他工具
-# gitg
-# qgit
-
-# 文件追溯吗，会逐行显示文件，在每一行的行首显示此行最早是什么版本引入，由谁引入的
-git blame READM
-
-# 将指定的提交在当前分支上重放，拣选后的新提交的哈希值是不同于所拣选的原提交的哈希值的
-git cherry-pick <commit-ish>
-
+# git rebase
+```bash
 # git rebase是对提交指定变基操作,即可以实现将指定范围的提交嫁接到另外一个提交之上
 # git rebase --onto <newbase> <since> <till>
 # 变基操作过程：
@@ -302,47 +314,17 @@ git rebase --onto 8f7f94b A master
 # 反转提交:想修正一个错误历史提交的正确做法是反转提交，即重新做一次新的提交
 # 将HEAD提交反向再提交一次
 git revert HEAD
-
-# 将指定版本库克隆到目录
-git clone <repository> <directory>
-
-# 克隆版本库，但不包含工作区，直接就是版本库的内容
-# 一般约定裸版本库目录名以.git为后缀
-git clone --bare <repository> <directory>
-git clone --mirror <repository> <directory>
-
-# 创建裸版本库
-git init --bare
-
-# 查看版本库中没有被任何引用关联的松散对象
-git fsck
-
-# 清理松散对象，而通过重置废弃的部分存在关联的提交会无法被清除
-git prune
-
-# 强制让之前的记录全部过期
-git reflog expire --expire=now --all
-
-# git gc对版本库进行一系列的优化动作
-#（1）对分散在.git/refs下的文件进行打包，打包到文件.git/packed-refs中
-#（2）丢弃90天前的reflog记录（git reflog expire --all）
-#（3）对松散对象进行打包（git repack）
-#（4）清除未被关联的对象。默认只清除2周以前的未被关联的对象（git prune --expire <date>）
-#（5）其他清理（如对合并冲突的历史记录进行过期清理）
-git gc
-git gc --prune=now # 对所有未关联的对象进行清理
-
-# 目前有以下命令后会自动指定git gc --auto命令
-# git merge
-# git receive-pack
-# git rebase -i
-# git am
 ```
 
-```bash
+---
 
+# git merge
+```bash
 # 合并操作
 git merge [options] <commit>
+
+# 将某个提交合并到当前分支上
+git merge acc2f69
 
 # 使用图形工具解决冲突
 git mergetool
@@ -354,10 +336,15 @@ git config --gloabl mergettool.kdiff3.path /path/to/kdiff3
 # 如果所用的冲突解决工具不在内置的工具列表中，还可以使用mergetool.<tool>.cmd对自定义工具的命令进行设置
 # merge.log 是否在合并提交说明中包含提交的概要信息，默认false
 
+# 将指定的提交在当前分支上重放，拣选后的新提交的哈希值是不同于所拣选的原提交的哈希值的
+git cherry-pick <commit-ish>
+
 ```
 
-```bash
+---
 
+# git tag
+```bash
 # 显示里程碑
 git tag # -n<num>可以在显示里程碑的同时显示说明
 
@@ -386,11 +373,12 @@ git push origin refs/tags/*
 
 # 删除远程仓库tag
 git push origin :mytag
-
 ```
 
-```bash
+---
 
+# git branch
+```bash
 # 显示分支，带*号的表示这个分支是当前工作分支
 git branch 
 git branch -r #查看远程分支
@@ -407,10 +395,12 @@ git push origin :branchname # 删除远程版本库的分支
 
 # 重命名分支
 git branch -m <oldbranch> <newbranch>
-git branch -M <oldbranch> <newbranch> # 强制重命名
- 
+git branch -M <oldbranch> <newbranch> # 强制重命名 
 ```
 
+---
+
+# git remote
 ```bash
 # 显示已经注册的远程版本库
 git remote -v
@@ -432,13 +422,13 @@ git remote update
 
 # 删除远程版本库
 git remote rm your-remote
-
 ```
 
-```bash
+---
 
-# 查看哪些提交领先
-git cherry
+# git pull
+```bash
+git cherry # 查看哪些提交领先
 
 # git pull = git fetch + git merge
 # 当执行git pull 命令时，会和被跟踪的远程分支进行合并（或者变基）
@@ -454,11 +444,12 @@ git fetch --no-tags origin master
 git pull --rebase
 git config branch.<branchname>.rebase true # 在<branchname>中执行git pull会默认采取变基操作
 git config branch.autosetuprebase true # 基于远程分支建立本地分支时默认配置上面的rebase参数
-
 ```
 
-```bash
+---
 
+# git push
+```bash
 # 当执行git push 命令时，会推送到远程版本库的同名分支中
 # 本地新建分支中执行git push,不会推送也不会报错
 # 因为远程不存在同名分支，不会进行推送
@@ -479,20 +470,41 @@ git push -f # 不一定是正确的解决方案
 #（1）修改/path/to/repos/shared.git
 git --git-dir=/path/to/repos/shared.git receive.denyNonFastForwards true
 # (2)通过钩子脚本进行设置
-
 ```
 
+---
+
+# 清理版本库
 ```bash
+# 查看版本库中没有被任何引用关联的松散对象
+git fsck
 
-# Git版本库本身提供的安全机制，避免对版本库的破坏
-# (1)用reflog记录对分支的操作历史
-# (2)关闭non-fast-forward推送(可配置receive.denyNonFastForwards true 禁止一切non-fast-forward推送)
-# (3)关闭分支删除功能(可配置receive.denyDeletes true 则禁止删除分支)
+# 清理松散对象，而通过重置废弃的部分存在关联的提交会无法被清除
+git prune
 
+# 强制让之前的记录全部过期
+git reflog expire --expire=now --all
+
+# git gc对版本库进行一系列的优化动作
+#（1）对分散在.git/refs下的文件进行打包，打包到文件.git/packed-refs中
+#（2）丢弃90天前的reflog记录（git reflog expire --all）
+#（3）对松散对象进行打包（git repack）
+#（4）清除未被关联的对象。默认只清除2周以前的未被关联的对象（git prune --expire <date>）
+#（5）其他清理（如对合并冲突的历史记录进行过期清理）
+git gc
+git gc --prune=now # 对所有未关联的对象进行清理
+
+# 目前有以下命令后会自动指定git gc --auto命令
+# git merge
+# git receive-pack
+# git rebase -i
+# git am
 ```
 
-```bash
+---
 
+# 补丁
+```bash
 # 保存为一个补丁文件
 git format-patch [<options>] [<since> | <revision-range>]
 
@@ -501,6 +513,20 @@ patch -pl xxxxxxxxxxxxx.patch
 
 # 将mbox文件中的补丁全部应用到当前分支
 git am user1-mail-archiva
-
 ```
 
+---
+
+# 归档与安全
+## 文件归档
+```bash
+git archiva -o latest.zop HEAD
+git archiva -o partial.tar HEAD src doc # 只对src和doc建立归档
+git archiva --format=tar --prefix=1.0/v1.0 | gzip > foo-1.0.tar.gz # 基于里程碑v1.0建立归档,并为归档中的文件添加目录前缀
+```
+
+## 安全
+Git版本库本身提供的安全机制，避免对版本库的破坏
+- 用reflog记录对分支的操作历史
+- 关闭non-fast-forward推送(可配置receive.denyNonFastForwards true 禁止一切non-fast-forward推送)
+- 关闭分支删除功能(可配置receive.denyDeletes true 则禁止删除分支)
